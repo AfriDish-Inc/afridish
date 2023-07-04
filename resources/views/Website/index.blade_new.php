@@ -198,8 +198,8 @@
             <div class="img-sec"><img src="{{ asset('website/img/p.png')}}"></div>
          </div>
          <div class="col-md-6">
-            <h2>Explore Best Brand,Products</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <!--  <h2>Explore Best Brand,Products</h2> -->
+            <h2>EXPLORE AND DISCOVER QUALITY AFRICAN MEALS IN CANADA.</h2>
             <div class="explore-two">
                <a href="#" class="explore">Let’s Connect</a> 
                <a href="#" class="v-products">About Us</a> 

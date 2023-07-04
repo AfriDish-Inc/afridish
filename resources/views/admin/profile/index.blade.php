@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="col-12 mb-1"><h2>Update Profile</h2></div>
                 <div class="col-12">
-                 @if(Auth::user()->user_type == "V")
+                  @if(Auth::user()->user_type == "V" || Auth::user()->user_type == "R" ||Auth::user()->user_type == "CH")
                  <form action="{{ route("vendor.updateProfile") }}" method="POST" enctype="multipart/form-data">
                  @else
                  <form action="{{ route("admin.updateProfile") }}" method="POST" enctype="multipart/form-data">
