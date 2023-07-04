@@ -1,0 +1,9 @@
+# Don't track content of these folders
+/vendor/
+node_modules/
+tests/
+vendor/
+vendor/
+public/upload
+.env/
+server.php
