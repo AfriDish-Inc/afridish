@@ -48,7 +48,7 @@
                 </div>
                 <div class="v-name">
                     <label>Category</label>
-                  <input type="text" value="{{App\Models\VendorCategory::where('id',$vendor->vendor_category_id)->first()->category_name}}">
+                  <input type="text" value="{{optional(App\Models\VendorCategory::where('id',$vendor->vendor_category_id)->first())->category_name}}">
                 </div>
               </div>
                 @if($vendor->vendor_category_id == 1)

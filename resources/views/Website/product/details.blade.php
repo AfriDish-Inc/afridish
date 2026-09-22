@@ -68,7 +68,7 @@
       <div class="p-description">
          <p>{{$products->detail}}</p>  
          <ul class="brands">
-            <li><label>Brand</label> : <span class="custom-mark">{{App\Models\Brand::where('id',$products->brand_id)->first()->name}}</span></li>
+            <li><label>Brand</label> : <span class="custom-mark">{{optional(App\Models\Brand::where('id',$products->brand_id)->first())->name}}</span></li>
             <li><label>Product Code</label> : <span>{{$products->sku}}</span></li>
             <li><label>Availability</label> : <span class="custom-mark">@if($products->quantity > 0) In Stock @else Out of Stock @endif</span></li>
          </ul>
