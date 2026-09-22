@@ -31,7 +31,7 @@ class sendPushNotificationToUser implements ShouldQueue
 
       // $fcm_token = User::select('firebase_token')->where('user_id', $user_id)->get()->toArray();
 
-        $userDeviceToken = 'dbrkRbJZEkMQkI-XRbSSQJ:APA91bHqoaJyD6WM489lrkjnwrKIqotMpSPLXJdv67WNuJ3hDQxu0qn7KQRE3hQjnhBlRzZNs1uaHz7mAyfDOQ55WNjOYC2OaGEIm6LdZWqwqsTinL10s-KOBWQvZbVj1soke0WlgEkP';
+        $userDeviceToken = optional(\App\Models\FcmToken::where('user_id', $user_id)->latest()->first())->fcm_token;
         $NotificationArray= array();                                                     
         $NotificationArray["body"] = $this->data['body'];
         $NotificationArray["title"] = $this->data['title'];
@@ -46,8 +46,7 @@ class sendPushNotificationToUser implements ShouldQueue
         //API URL of FCM
         $url = 'https://fcm.googleapis.com/fcm/send';
         /*api_key available in: Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key*/
-      // $api_key    = env('FCM_API_KEY');
-        $api_key    = 'AAAAuVlW47o:APA91bFtknHnAJp1eOyYPSaZOkrkkamzzm4NIgmj-21R0ivbNa-EwWaeE-O-RtXSIFtj_u47Zdqq3K8KlhbNajUqF9UKTiyC9TP4lEJEFDkthqvV20PWMGJ_eKEMB6dW6vH0pfv1wxyJ';
+        $api_key    = env('FCM_API_KEY');
         //header includes Content type and api key
         $headers = array(
             'Content-Type:application/json',
@@ -81,7 +80,7 @@ class sendPushNotificationToUser implements ShouldQueue
 
   public function handle2()
   {
-      $userDeviceToken = 'dbrkRbJZEkMQkI-XRbSSQJ:APA91bHqoaJyD6WM489lrkjnwrKIqotMpSPLXJdv67WNuJ3hDQxu0qn7KQRE3hQjnhBlRzZNs1uaHz7mAyfDOQ55WNjOYC2OaGEIm6LdZWqwqsTinL10s-KOBWQvZbVj1soke0WlgEkP';
+      $userDeviceToken = optional(\App\Models\FcmToken::where('user_id', $user_id)->latest()->first())->fcm_token;
       $NotificationArray= array();                                                     
       $NotificationArray["body"] = $this->data['body'];
       $NotificationArray["title"] = $this->data['title'];
@@ -96,8 +95,7 @@ class sendPushNotificationToUser implements ShouldQueue
       //API URL of FCM
       $url = 'https://fcm.googleapis.com/fcm/send';
       /*api_key available in: Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key*/
-    // $api_key    = env('FCM_API_KEY');
-      $api_key    = 'AAAAuVlW47o:APA91bFtknHnAJp1eOyYPSaZOkrkkamzzm4NIgmj-21R0ivbNa-EwWaeE-O-RtXSIFtj_u47Zdqq3K8KlhbNajUqF9UKTiyC9TP4lEJEFDkthqvV20PWMGJ_eKEMB6dW6vH0pfv1wxyJ';
+      $api_key    = env('FCM_API_KEY');
       //header includes Content type and api key
       $headers = array(
           'Content-Type:application/json',
@@ -141,7 +139,6 @@ class sendPushNotificationToUser implements ShouldQueue
                           
     foreach($userTokens as $userToken)
     {
-      // $userDeviceToken = 'dFFiPh8T-gKHWjh0SlJQh-:APA91bHCtkDpXogwh0v0tcmTwav-NW2fCsNMl8xNgQOHFPRlT8jYTIPnEVoseL_qD5SZBJsg6Y0Y8kXC-qjSeKrivB7IFZoNnFSScx7WIyNzlTAw3i61p1iyqJPdCYA2Os12GKqvLbWY';
       $userDeviceToken = $userToken;
       $NotificationArray= array();                                                     
       $NotificationArray["body"] = $this->data['body'];
@@ -157,8 +154,7 @@ class sendPushNotificationToUser implements ShouldQueue
       //API URL of FCM
       $url = 'https://fcm.googleapis.com/fcm/send';
       /*api_key available in: Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key*/
-      // $api_key    = env('FCM_API_KEY');
-      $api_key    = 'AAAAuVlW47o:APA91bFtknHnAJp1eOyYPSaZOkrkkamzzm4NIgmj-21R0ivbNa-EwWaeE-O-RtXSIFtj_u47Zdqq3K8KlhbNajUqF9UKTiyC9TP4lEJEFDkthqvV20PWMGJ_eKEMB6dW6vH0pfv1wxyJ';
+        $api_key    = env('FCM_API_KEY');
       //header includes Content type and api key
       $headers = array(
           'Content-Type:application/json',

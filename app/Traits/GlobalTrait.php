@@ -94,8 +94,8 @@ trait GlobalTrait
     public function sendPushNotification($device_ids,$data){
         try{
             $url = 'https://fcm.googleapis.com/fcm/send';
-            //$api_key = 'AAAAhIb_fs8:APA91bHrj-wviaDTaC4LQW22jeLv0gzoJ9up1yJw-udW7XpyGx1KLFFV6gl0v_rISj7ds2iXntSmDrxhq_awBFiBNqhPukEiumceujRmjnIRQ1g9nFiVo1QNq0VGnEVJYxvECt8bWR5Y';
-            $api_key = 'AAAAcTNzVWI:APA91bGERPJRVoSXk8Pfd7y2lq2Gcc3s_FlBCD1z8zgiw8yO7KtvfS2cVuW79zqWKXV3_zuNrJ2dEL0UM5uZKBR1p_zGJEhiKFeAFt8ej0iuAGJ0P28LG_CnTERNa38Pyoz2G50MiU8e';
+            /*api_key available in: Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key*/
+            $api_key = env('FCM_API_KEY');
             $count = 1;
             $fields  = array(
                 'registration_ids' => $device_ids,
