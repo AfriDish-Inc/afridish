@@ -42,9 +42,14 @@ return [
     ],
 
     'google' => [
-        'client_id' => '18143024773-963qu5u0n10smst7leilt9ef2433b1qk.apps.googleusercontent.com',
-        'client_secret' => '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',
-        'redirect' => 'https://puffie.iapplabz.co.in/auth/google/callback',
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URL'),
+    ],
+
+    'fcm' => [
+        'project_id' => env('FCM_PROJECT_ID'),
+        'credentials' => env('FCM_CREDENTIALS_PATH', storage_path('app/firebase-service-account.json')),
     ],
 
 ];
