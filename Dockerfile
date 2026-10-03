@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         libzip-dev \
         libpng-dev \
+        libjpeg62-turbo-dev \
         libonig-dev \
         libxml2-dev \
         libicu-dev \
