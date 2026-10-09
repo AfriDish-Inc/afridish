@@ -137,11 +137,10 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-		$request->validate([
-            'name' => 'required',
-            'store_id' => 'required',
-			'category_id' => 'required'
-        ]);
+        if (auth()->user()->user_type == "V") {
+            return redirect()->route('vendor.product.edit', $product);
+        }
+        return redirect()->route('admin.product.edit', $product);
     }
 
     public function edit(Product $product){
