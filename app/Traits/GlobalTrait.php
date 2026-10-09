@@ -74,7 +74,15 @@ trait GlobalTrait
             $cartdata = DB::table('carts')->where('user_id',auth()->user()->id)->where('product_id',$value)->first();
             if($cartdata){
                 $productdata = DB::table('products')->where('id',$value)->first();
-                DB::table('orders')->where('id',$insert_id)->update(['vendor_id' => $productdata->provider_id]);
+                // orders.vendor_id is NOT set here on purpose: a single order can
+                // span multiple vendors (one row per product in order_items, each
+                // correctly tagged with its own vendor_id below), so there is no
+                // single correct vendor for the order as a whole. Overwriting this
+                // column per product meant only the last vendor processed ever saw
+                // the order in their dashboard - every other vendor in a
+                // multi-vendor cart silently lost it. Vendor-scoped order queries
+                // should go through order_items.vendor_id instead (see
+                // OrderController::index/updateOrder/showOrder).
                 $order_item['order_id'] = $insert_id;
                 $order_item['product_id'] = $value;
                 $order_item['order_quantity'] = $cartdata->product_quantity;

@@ -224,9 +224,12 @@ class OrderController extends Controller
     {
         
        if($request->status == "successful"){
+           $orderData=Session::get('orderData');
+           if(!$orderData){
+               return redirect('checkout')->with('error','Whoops! Your session expired, please try again.');
+           }
            $verifypayment = $this->curlGet($request->transaction_id);
 
-          $orderData=Session::get('orderData');
            $paymentRecord = PaymentRecord::firstOrCreate([
                 'transacton_id' => $request->transaction_id
             ], [

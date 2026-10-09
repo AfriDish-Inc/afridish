@@ -55,7 +55,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
            // 'vendor_type' => 'required',
-            'user_type' => 'required',
+            'user_type' => 'required|in:V,R,CH',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'password_confirmation' => 'required_with:password|same:password|min:6',
@@ -78,7 +78,11 @@ class AuthController extends Controller
             'longitude' => $request->lon,
            // 'vendor_category_id' => $request->vendor_type,
             'country_id' => "+234",
-            'dob' => $request->date_of_birth,
+            // No 'dob' column exists on users (only 'is_adult') - the
+            // date_of_birth input is only used above to validate the
+            // vendor is 18+; record that result instead of a date that
+            // has nowhere to be stored.
+            'is_adult' => 1,
         ]);
         }else{
             return redirect('/vendor/signup')->withInput()->with('message', 'Please enter valid email !');

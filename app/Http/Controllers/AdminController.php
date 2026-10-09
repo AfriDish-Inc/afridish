@@ -79,7 +79,9 @@ class AdminController extends Controller
 
     public function Orders(Request $request)
     {
-         $orders = Order::where('vendor_id',auth()->user()->id)->paginate(10);   
+         $orders = Order::whereHas('items', function ($q) {
+             $q->where('vendor_id', auth()->user()->id);
+         })->paginate(10);
          return view('admin.orders.index',compact('orders'));
     }
 
