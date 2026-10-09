@@ -22,13 +22,6 @@ use Stripe;
 use Carbon\Carbon;
 class OrderController extends Controller
 {
-     private $stripe;
-      public function __construct(){
-          Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-          $this->stripe = new \Stripe\StripeClient(config('services.stripe.secret')); 
-         
-          
-     }
     use GlobalTrait;
 
     public function productCheckout(Request $request)
@@ -49,51 +42,43 @@ class OrderController extends Controller
         if($validator->fails()){ 
            return redirect()->back()->with('errors', $validator->errors()->first()); 
         }
-           $user = User::select('stripe_id', 'email')->where('id', Auth::id())->first();
-          try{
-                   $userDetails =  \Stripe\Customer::retrieve(
-                         $user->stripe_id,
-                      []
-                    );
-                    } catch(\Exception $ex){
-                     $result = array(
-                       "statusCode" => 401,
-                       "message" => $ex->getMessage()
-                     );
-                     return response()->json($result );
-                   }
-        
-                $this->orderPlaced($request->all());
-                if($request->payment_method == "stripe") {
-        
-                 try{
-                 
-                     $data = \Stripe\Charge::create([
-                       'amount' => $request->grand_total * 100,
-                       'currency' => 'USD',
-                       'description' => 'This payment for subscription',
-                       'customer' => ($user)?$user->stripe_id:'',
-                       'source' => $userDetails->default_source,
-                       //'transfer_group'=>$order_details->invoice,
-                      // 'capture' => false,
-                       
-                     ]);
-                 }
-                      catch (\Exception $ex)
-                       {
-                           $result = array(
-                             "statusCode" => 401,
-                             "message" => $ex->getMessage()
-                           );
-                           return response()->json($result);
-                       }
-                       if($data->status == "succeeded"){
-          // $verifypayment = $this->curlGet($request->transaction_id);
+        if ($request->payment_method == "stripe") {
+            $user = User::select('stripe_id', 'email')->where('id', Auth::id())->first();
+            try {
+                \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+                $userDetails = \Stripe\Customer::retrieve($user->stripe_id, []);
+            } catch (\Exception $ex) {
+                return response()->json(["statusCode" => 401, "message" => $ex->getMessage()]);
+            }
 
-          //$orderData=Session::get('orderData');
-           $paymentRecord = PaymentRecord::firstOrCreate([
+            try {
+                $data = \Stripe\Charge::create([
+                    'amount' => $request->grand_total * 100,
+                    'currency' => 'USD',
+                    'description' => 'Payment for order',
+                    'customer' => ($user) ? $user->stripe_id : '',
+                    'source' => $userDetails->default_source,
+                ]);
+            } catch (\Exception $ex) {
+                return response()->json(["statusCode" => 401, "message" => $ex->getMessage()]);
+            }
+
+            if ($data->status != "succeeded") {
+                return response()->json(["statusCode" => 401, "message" => "Payment was not completed."]);
+            }
+
+            // Only create the order, decrement stock, and clear the cart
+            // once payment has actually succeeded - previously orderPlaced()
+            // ran unconditionally before the charge, so a declined or
+            // failed card still left a placed order with stock already
+            // deducted and no way to tell it was never paid for.
+            $orderId = $this->orderPlaced($request->all());
+            DB::table('orders')->where('id', $orderId)->update(['paypal_charge_id' => $data->id]);
+
+            PaymentRecord::firstOrCreate([
                 'transacton_id' => $data->id
             ], [
+                'order_id' => $orderId,
                 'transacton_id' => $data->id,
                 'last_four_digit' => $data->source->last4,
                 'flw_ref' => 0,
@@ -107,27 +92,12 @@ class OrderController extends Controller
                 'payment_responce' => json_encode($data),
             ]);
 
-           $subscription = Subscription::firstOrCreate([
-                'user_id' => auth()->user()->id,
-            ], [
-                'stripe_id' => $data->id,
-                'user_id' => auth()->user()->id,
-                'card_last_four' => $data->source->last4,
-                'start_at' => now(),
-                'expire_at' => Carbon::today()->addDays(30)
-            ]);
-
-            if($subscription){
-               return redirect('/order-history')->with('message','Great! Plan subscribed successfully');
-            }else{
-               return redirect()->back()->with('error','Whoops! Plan not subscribed'); 
-            }
-           
-       }
-   }
-   else{
-    return redirect('/order-history')->with('message','Great! Order placed successfully');
-   }
+            return redirect('/order-history')->with('message','Great! Order placed successfully');
+        } else {
+            // e.g. pay at pickup - nothing to charge up front.
+            $this->orderPlaced($request->all());
+            return redirect('/order-history')->with('message','Great! Order placed successfully');
+        }
 
   /*      if ($request->payment_method == "fw") {
             $paymentdata = [
