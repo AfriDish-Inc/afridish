@@ -22,7 +22,7 @@
                              <td>
                                 {{ $order->product_name ?? '' }}
                             </td>
-                            <td>{{$order->address->address1}},{{$order->address->address2}},{{$order->address->city}},{{$order->address->zip_code}},{{$order->address->state}},{{$order->address->mobile_number}}</td>
+                            <td>@if($order->address){{$order->address->address1}},{{$order->address->address2}},{{$order->address->city}},{{$order->address->zip_code}},{{$order->address->state}},{{$order->address->mobile_number}}@endif</td>
                             <td>
                                 {{ $order->price ?? '' }}
                             </td>
