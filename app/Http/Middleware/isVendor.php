@@ -20,10 +20,14 @@ class isVendor
     {
         if (Auth::user()) {
             if(Auth::user()->user_type == "V" || Auth::user()->user_type == "R" || Auth::user()->user_type == "CH"){
+               if(Auth::user()->is_active != 1){
+                  Auth::logout();
+                  return Redirect::to('admin/login')->with('message', 'Your account is pending admin approval, or has been suspended.');
+               }
                return $next($request);
             }else{
                Auth::logout();
-               return Redirect::to('admin/login'); 
+               return Redirect::to('admin/login');
             }
         }else{
             Auth::logout();

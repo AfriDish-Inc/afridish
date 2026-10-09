@@ -68,6 +68,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('home', 'HomeController@adminHome')->name('home');
         Route::get('index', 'AdminController@index')->name('index');
         Route::get('users', 'CustomerController@index')->name('users');
+        Route::get('vendor-accounts', 'Admin\VendorsController@index')->name('vendors');
         Route::post('updateProfile', 'AdminController@updateProfile')->name('updateProfile');
         Route::post('updatePassword', 'AdminController@updatePassword')->name('updatePassword'); 
         Route::resource('category', 'CategoriesController');
