@@ -53,9 +53,10 @@ class CartController extends Controller
              }else{
                if (($productdata->quantity) >= $request->product_quantity) {
                 $cart = new Cart;
-                $cart->user_id = Auth::user()->id;            
+                $cart->user_id = Auth::user()->id;
                 $cart->product_id = $request->product_id;
                 $cart->product_quantity = $request->product_quantity;
+                $cart->vendor_id = $productdata->provider_id;
                 $cart->save();
               }else{
                  return redirect()->back()->with('errors',"Only ".$productdata->quantity." product in stock");
