@@ -26,7 +26,7 @@ class User extends Authenticatable
     use HasFactory;
     use SoftDeletes;
     protected $fillable = ['name', 'first_name' , 'last_name' , 'email', 'password', 'remember_token', 'is_verified', 'mobile_number','user_type',
-                          'login_type' , 'user_address', 'is_adult', 'address' , 'latitude', 'longitude' , 'social_id' , 'profile_picture' ,'dob' ,'country_id', 'device_type', 'vendor_category_id'];
+                          'login_type' , 'user_address', 'is_adult', 'is_active', 'address' , 'latitude', 'longitude' , 'social_id' , 'profile_picture' ,'dob' ,'country_id', 'device_type', 'vendor_category_id'];
 
 
     /**

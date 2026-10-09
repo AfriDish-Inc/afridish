@@ -64,7 +64,13 @@
                    Vendors
                 </a>
             </li>
-            <li class="nav-item"> 
+            <li class="nav-item">
+                <a href="{{ route('admin.vendors') }}" class="nav-link">
+                   <i class="fa fa-user-check nav-icon"></i>
+                   Vendor Accounts
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('admin.orders') }}" class="nav-link">
                  <i class="nav-icon fas fa-book-reader nav-icon"></i>
                    Orders

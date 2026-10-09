@@ -35,6 +35,16 @@ class StatusController extends Controller
             Tag::where('id' , $request->product_id)->update(['is_active' => $request->status]);
             return response()->json(['status' => true , 'message' => 'Category status updated successfully.'], 200);
         }
+
+        if($request->model == 'vendors')
+        {
+            // Restrict to vendor-type accounts so this generic endpoint can't
+            // be used to flip is_active on a customer or admin account.
+            User::whereIn('id', [$request->product_id])
+                ->whereIn('user_type', ['V', 'CH', 'R'])
+                ->update(['is_active' => $request->status]);
+            return response()->json(['status' => true , 'message' => 'Vendor status updated successfully.'], 200);
+        }
     }
 
     public function updateFeatures(Request $request) 

@@ -28,11 +28,11 @@ class AuthController extends Controller
 
             if (auth()->user()->user_type == "A") {
                 return redirect()->route('admin.home');
-            }elseif(auth()->user()->user_type == "V"){
-                return redirect()->route('vendor.home');
-            }elseif(auth()->user()->user_type == "CH"){
-                return redirect()->route('vendor.home');
-            }elseif(auth()->user()->user_type == "R"){
+            }elseif(in_array(auth()->user()->user_type, ['V', 'CH', 'R'])){
+                if(auth()->user()->is_active != 1){
+                    Auth::logout();
+                    return redirect('/admin/login')->with('message', 'Your account is pending admin approval, or has been suspended.');
+                }
                 return redirect()->route('vendor.home');
             }else{
                 Auth::logout();
@@ -83,6 +83,9 @@ class AuthController extends Controller
             // vendor is 18+; record that result instead of a date that
             // has nowhere to be stored.
             'is_adult' => 1,
+            // New vendor accounts start pending admin approval (see
+            // Admin\VendorsController and isVendor middleware).
+            'is_active' => 0,
         ]);
         }else{
             return redirect('/vendor/signup')->withInput()->with('message', 'Please enter valid email !');
