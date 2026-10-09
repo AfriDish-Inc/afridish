@@ -41,7 +41,7 @@ class ProductController extends Controller
     {    
 		$data['category'] = Category::where('is_active' , 1)->get();
         $data['brand'] = Brand::get();
-        if(auth()->user()->user_type == "V"){
+        if($this->isVendorUser()){
             $data['provider'] = User::where('id' , auth()->user()->id)->get();
         }else{
             $data['provider'] = User::where('user_type' , 'V')->get();
@@ -88,12 +88,15 @@ class ProductController extends Controller
                     
                 }
               
-                $vendordetails = User::where('id',$request->provider_id)->first();
+                // A vendor may only ever create products attributed to themselves -
+                // provider_id from the request is only trusted for admins.
+                $providerId = $this->isVendorUser() ? auth()->user()->id : $request->provider_id;
+                $vendordetails = User::where('id',$providerId)->first();
                 $products->name = $request->name;
                 $products->detail = $request->detail;
                 $products->user_id = auth()->user()->id;
                 $products->category_id = $request->category_id;
-                $products->provider_id = $request->provider_id;
+                $products->provider_id = $providerId;
                 $products->price = $request->price;
                 $products->brand_id = $request->brand_id;
                 $products->quantity = $request->quantity;
@@ -135,21 +138,41 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * True if the authenticated user is a vendor-side account (as opposed
+     * to an admin), the same set of types the 'vendor' middleware allows.
+     */
+    private function isVendorUser()
+    {
+        return in_array(auth()->user()->user_type, ['V', 'CH', 'R']);
+    }
+
+    /**
+     * A vendor may only act on their own products; admins may act on any.
+     */
+    private function authorizeProductOwner(Product $product)
+    {
+        if ($this->isVendorUser() && $product->provider_id != auth()->user()->id) {
+            abort(403);
+        }
+    }
+
     public function show(Product $product)
     {
-        if (auth()->user()->user_type == "V") {
+        if ($this->isVendorUser()) {
             return redirect()->route('vendor.product.edit', $product);
         }
         return redirect()->route('admin.product.edit', $product);
     }
 
     public function edit(Product $product){
+        $this->authorizeProductOwner($product);
 		$where = array('id' => $product->id);
         $data['product'] =Product::where($where)->first();
         $data['quantity_unit'] = Quantity::select('name')->get();
 		$data['category'] = Category::where('is_active' , 1)->get();
         $data['brand'] = Brand::get();
-        if(auth()->user()->user_type == "V"){
+        if($this->isVendorUser()){
             $data['provider'] = User::where('id' , auth()->user()->id)->get();
         }else{
             $data['provider'] = User::where('user_type' , 'V')->get();
@@ -177,7 +200,8 @@ class ProductController extends Controller
             'description' => 'required',
         ]);
 
-        $product_detail = Product::where('id', '=', $id)->first();
+        $product_detail = Product::where('id', '=', $id)->firstOrFail();
+        $this->authorizeProductOwner($product_detail);
         //$product->update($request->all());
         $vendordetails = User::where('id',$request->provider_id)->first();
         
@@ -224,11 +248,11 @@ class ProductController extends Controller
 								 )
 						   );*/
 		}
-        if (auth()->user()->user_type == "V") {
+        if ($this->isVendorUser()) {
              return Redirect::to('vendor/product')->with('success','Product updated successfully');
          }else{
              return Redirect::to('admin/product')->with('success','Product updated successfully');
-         } 
+         }
     }
 
     /**
@@ -238,11 +262,12 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Product $product){
+        $this->authorizeProductOwner($product);
         Wishlist::where('product_id',$product->id)->delete();
         Cart::where('product_id',$product->id)->delete();
         ProductReview::where('product_id',$product->id)->delete();
         $product->delete();
-        if (auth()->user()->user_type == "V") {
+        if ($this->isVendorUser()) {
             return Redirect::to('vendor/product')->with('success','Product deleted successfully');
         }else{
             return Redirect::to('admin/product')->with('success','Product deleted successfully');
