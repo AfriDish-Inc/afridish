@@ -57,6 +57,7 @@ Route::get('auth/google/callback', [App\Http\Controllers\Website\UserController:
         Route::any('/removecart', 'Website\ProductController@removeCart');
         Route::any('/order-rating', 'Website\ProductReviewController@orderRating')->name('order-rating');
           Route::any('addUserCard','Website\CardController@addUserCard')->name('users.addUserCard');
+        Route::post('/request-order', 'Website\InquiryController@store')->name('request-order');
 
     });
 //}); 
@@ -105,6 +106,8 @@ Route::group(['prefix' => 'vendor', 'as' => 'vendor.'], function () {
         Route::any('update-order', 'OrderController@updateOrder');
         Route::get('show-order', 'OrderController@showOrder');
         Route::get('sold-product', 'OrderController@soldProduct')->name('sold-product');
+        Route::get('inquiries', 'InquiriesController@index')->name('inquiries');
+        Route::post('inquiries/update-status', 'InquiriesController@updateStatus')->name('inquiries.update-status');
         Route::any('setting', 'SubscriptionController@index')->name('setting');
         Route::any('add-account', 'SubscriptionController@addAccount')->name('add-account');
         Route::any('verify-subscribtion', 'SubscriptionController@verifySubscription')->name('verify-subscribtion');

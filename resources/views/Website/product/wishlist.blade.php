@@ -33,16 +33,16 @@
                    @endif
                   <div class="wish-lists">
                       <div class="p-image"><img src="{{ asset('upload/images/')}}/{{$image[0]}}"></div>
-                      <h4>{{$value->name}}</h4>
+                      <h4>{{$value->product_name}}</h4>
                       <!-- <div class="product-count">
                         <button class="button-count no-active" disabled>-</button>
                         <input type="text" readonly class="number-product" value="1">
                         <button class="button-count">+</button>
                       </div> -->
-                      
+
                       <p class="product-status">In Stock</p>
                       <p class="price">${{$value->price}}</p>
-                      <a href="{{url('/addcartlist?product_id=')}}{{$value->product_id}}&product_quantity=1&wishlist=1" class="atc-btn">Add To Cart</a>
+                      <a href="javascript::void(0)" onclick="openInquiryModal({{$value->provider_id}}, {{$value->product_id}}, '{{ addslashes($value->product_name) }}')" class="atc-btn">Request to Order</a>
                       <a href="{{url('remove-wishlist?id=')}}{{$value->id}}" class="close-bt"><img src="{{ asset('website/img/close.svg')}}"></a>
                   </div>
                   @endforeach

@@ -58,6 +58,7 @@
                 </div>
                 @endif
             </form>
+            <a href="javascript::void(0)" onclick="openInquiryModal({{$vendor->id}}, null, '{{ addslashes($vendor->name) }}')" class="btn btn-primary">Request to Order from {{$vendor->name}}</a>
           </div>
       </div>
 </div>
@@ -108,7 +109,7 @@
                                    </a>
                                 </div>
                              </div>
-                             <div class="atc"><a href="javascript::void(0)" onclick="addToCart({{$product->id}},1)">Add To Cart</a></div>
+                             <div class="atc"><a href="javascript::void(0)" onclick="openInquiryModal({{$product->provider_id}}, {{$product->id}}, '{{ addslashes($product->name) }}')">Request to Order</a></div>
                           </div>
                           <div class="product-info">
                              <div class="star-miles">

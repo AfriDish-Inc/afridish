@@ -155,8 +155,7 @@
                                  </a>
 	                                 </div>
 	                              </div>
-	                              <!-- <div class="atc"><a href="{{url('/addcartlist?product_id=')}}{{$product->id}}&product_quantity=1">Add To Cart</a></div> -->
-                                 <div class="atc"><a href="javascript::void(0)" onclick="addToCart({{$product->id}},1)">Add To Cart</a></div>
+                                 <div class="atc"><a href="javascript::void(0)" onclick="openInquiryModal({{$product->provider_id}}, {{$product->id}}, '{{ addslashes($product->name) }}')">Request to Order</a></div>
 	                           </div>
 	                           <div class="product-info">
 	                              <div class="star-miles">

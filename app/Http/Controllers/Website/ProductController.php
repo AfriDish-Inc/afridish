@@ -103,6 +103,7 @@ class ProductController extends Controller
             $value->product_name = $productdata->name;
             $value->image = $productdata->image;
             $value->price = $productdata->price;
+            $value->provider_id = $productdata->provider_id;
         }
         return view('Website.product.wishlist',compact('data'));
     } 

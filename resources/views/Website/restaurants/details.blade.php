@@ -52,6 +52,7 @@
                     <textarea rows="4" cols="50">{{$restaurant->address}}</textarea>
                 </div>
             </form>
+            <a href="javascript::void(0)" onclick="openInquiryModal({{$restaurant->id}}, null, '{{ addslashes($restaurant->name) }}')" class="btn btn-primary">Request to Order from {{$restaurant->name}}</a>
           </div>
       </div>
 </div>
@@ -102,7 +103,7 @@
                                    </a>
                                 </div>
                              </div>
-                             <div class="atc"><a href="javascript::void(0)" onclick="addToCart({{$product->id}},1)">Add To Cart</a></div>
+                             <div class="atc"><a href="javascript::void(0)" onclick="openInquiryModal({{$product->provider_id}}, {{$product->id}}, '{{ addslashes($product->name) }}')">Request to Order</a></div>
                           </div>
                           <div class="product-info">
                              <div class="star-miles">
