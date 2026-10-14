@@ -9,7 +9,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\Wishlist;
-use App\Models\Cart;
 use Illuminate\Foundation\Auth\AuthenticatesUsers; 
 use Illuminate\Support\Facades\Validator;
 use Redirect;
@@ -112,15 +111,6 @@ class ProductController extends Controller
     {
          $data = Wishlist::where('user_id',auth()->user()->id)->where('id',$request->id)->delete();
          return Redirect::back()->with('success','Product removed in wishlist.');
-    }
-
-    public function addToCart(Request $request)
-    {
-        $cart = Cart::firstOrNew(['product_id' => $request->id , 'user_id'=>auth()->user()->id]);   
-        $cart->product_id = $request->id;
-        $cart->product_quantity = $request->product_quantity;
-        $cart->user_id = auth()->user()->id;
-        $cart->save(); 
     }
 
     public function productData(Request $request){
@@ -240,70 +230,5 @@ class ProductController extends Controller
         return response()->json(['status' => 2 ,'message' => 'Login required'], 200);
       }
     }
-
-    public function addcart(Request $request){
-
-      if (Auth::user()) {
-            $validator = Validator::make($request->all(), [
-                  'product_id' => 'required',
-                  'product_quantity' => 'required',
-                ]);
-             if($validator->fails()){ 
-                return response()->json(['status' => 0 ,'errors' => $validator->errors()->first()], 200); 
-             }
-             
-             $cartdata = Cart::where('product_id',$request->product_id)->where('user_id',Auth::user()->id)->first();
-
-             $productdata = Product::where('id',$request->product_id)->first();
-             if($cartdata && ($productdata->quantity > $cartdata->product_quantity)){
-               $cartdata->product_quantity = $cartdata->product_quantity+$request->product_quantity;
-               $cartdata->vendor_id = $productdata->provider_id;
-               $cartdata->save();
-             }else{
-
-                // $olderdata = Cart::where('vendor_id',$productdata->provider_id)->where('user_id',Auth::user()->id)->get();
-                // die($olderdata);
-                // if(count($olderdata) > 0){
-                   if ((($productdata->quantity) >= $request->product_quantity )) {
-                    
-                    $cart = new Cart;
-                    $cart->user_id = Auth::user()->id;            
-                    $cart->product_id = $request->product_id;
-                    $cart->vendor_id = $productdata->provider_id;
-                    $cart->product_quantity = $request->product_quantity;
-                    $cart->save();
-                  }else{
-                     $count = Cart::where('user_id',Auth::user()->id)->count(); 
-                     return response()->json(['status' => 0 ,'message' => "Only ".$productdata->quantity." product in stock",'favcount'=>$count], 200);
-                     //return redirect()->back()->with('errors',"Only ".$productdata->quantity." product in stock");
-                  }
-              // }else{
-
-              // }
-             }
-             if($request->wishlist){
-                Wishlist::where('product_id',$request->product_id)->where('user_id',Auth::user()->id)->delete();
-             }
-
-             $count = Cart::where('user_id',Auth::user()->id)->count();
-             return response()->json(['status' => 1 ,'message' => 'Product added in cart successfully','favcount'=>$count], 200);
-            //return redirect()->back()->with('message',"Product added in cart successfully");;
-          }else{
-            return response()->json(['status' => 2 ,'message' => 'Login required'], 200);
-         } 
-    }
-
-
-    public function removeCart(Request $request){
-        $validator = Validator::make($request->all(), [
-              'cart_id' => 'required',
-            ]);
-         if($validator->fails()){ 
-            return response()->json(['status' => 0 ,'errors' => $validator->errors()->first()], 200); 
-         }
-        Cart::where('id',$request->cart_id)->where('user_id',Auth::user()->id)->delete();
-        $count = Cart::where('user_id',Auth::user()->id)->count();
-        return response()->json(['status' => 1 ,'message' => 'Product removed successfully','favcount'=>$count], 200);
-    } 
 
 }

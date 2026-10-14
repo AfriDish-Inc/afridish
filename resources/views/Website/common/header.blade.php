@@ -37,9 +37,6 @@
                   <a class="nav-link icn" href="{{url('wish-list')}}"><img src="{{ asset('website/img/wish-hdr.svg')}}"><span id="wish_count">{{ App\Models\Wishlist::where('user_id',Auth::user()->id)->count() ?? "" }}</span> </a>
                </li>
 
-               <li class="nav-item">
-                  <a class="nav-link icn" href="{{url('shoping-cart')}}"><img src="{{ asset('website/img/cart.svg')}}"><span id="cart_count">{{ App\Models\Cart::where('user_id',Auth::user()->id)->count() ?? "" }}</span> </a>
-               </li>
                </div>
                <form class=" form-inline my-2 my-lg-0 nav-item dropdown">
                 <a href="#" class="signout nav-link dropdown-toggle"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

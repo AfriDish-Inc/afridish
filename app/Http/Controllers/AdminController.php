@@ -3,10 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
-use App\Models\BillingAddress;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -77,14 +73,5 @@ class AdminController extends Controller
         }
     }
 
-    public function Orders(Request $request)
-    {
-         $orders = Order::whereHas('items', function ($q) {
-             $q->where('vendor_id', auth()->user()->id);
-         })->paginate(10);
-         return view('admin.orders.index',compact('orders'));
-    }
-
-    
 
 }
