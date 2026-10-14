@@ -10,6 +10,8 @@ use Auth;
 use DB;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -59,7 +61,19 @@ class UserController extends Controller
     public function handleGoogleCallback(Request $request){
         try {
             $user = Socialite::driver('google')->stateless()->user();
-            $finduser = User::where('social_id', $user->id)->first();
+            $finduser = User::where('social_id', $user->id)->where('social_type', 1)->first();
+            if(!$finduser){
+                // Fall back to a verified-email match so someone who already
+                // registered with a password doesn't get a second, duplicate
+                // account just by logging in with Google using that email.
+                $finduser = $user->email ? User::where('email', $user->email)->first() : null;
+                if($finduser){
+                    $finduser->update([
+                        'social_id' => $user->id,
+                        'social_type' => 1,
+                    ]);
+                }
+            }
             if($finduser){
                 Auth::login($finduser);
                 return redirect('/');
@@ -68,9 +82,9 @@ class UserController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'social_id'=> $user->id,
-                    'social_type'=> 'google',
+                    'social_type'=> 1, // social_type is an integer column: 1 = google, 2 = facebook
                     'user_type'=> 'C',
-                    'password' => encrypt('123456dummy')
+                    'password' => Hash::make(Str::random(32)),
                 ]);
                 Auth::login($newUser);
                 return redirect('/');
