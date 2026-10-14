@@ -20,20 +20,18 @@ class StripePaymentController extends Controller
     public function stripePost(Request $request)
     {
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        $data = Stripe\Charge::create ([
-                "amount" =>$request->amount * 100,
-                "currency" => "USD",
-                "source" => $request->stripeToken,
-                "description" => "This payment for subscription",
-        ]);
-        // echo "<pre>";
-        // print_r($data); die;
-        //Session::flash('success', 'Payment Successfull!');
+        try {
+            $data = Stripe\Charge::create ([
+                    "amount" =>$request->amount * 100,
+                    "currency" => "USD",
+                    "source" => $request->stripeToken,
+                    "description" => "This payment for subscription",
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
 
         if($data->status == "succeeded"){
-          // $verifypayment = $this->curlGet($request->transaction_id);
-
-          //$orderData=Session::get('orderData');
            $paymentRecord = PaymentRecord::firstOrCreate([
                 'transacton_id' => $data->id
             ], [
@@ -50,11 +48,13 @@ class StripePaymentController extends Controller
                 'payment_responce' => json_encode($data),
             ]);
 
-           $subscription = Subscription::firstOrCreate([
+           // updateOrCreate, not firstOrCreate - a renewal payment must
+           // actually extend expire_at on the existing row, not be
+           // silently absorbed into it while the old expiry stands.
+           $subscription = Subscription::updateOrCreate([
                 'user_id' => auth()->user()->id,
             ], [
                 'stripe_id' => $data->id,
-                'user_id' => auth()->user()->id,
                 'card_last_four' => $data->source->last4,
                 'start_at' => now(),
                 'expire_at' => Carbon::today()->addDays(30)
@@ -63,54 +63,11 @@ class StripePaymentController extends Controller
             if($subscription){
                return redirect('/vendor/setting')->with('message','Great! Plan subscribe successfully');
             }else{
-               return redirect()->back()->with('error','Whoops! Plan not subscribe'); 
+               return redirect()->back()->with('error','Whoops! Plan not subscribe');
             }
-           
+
        }
-           
-       // return redirect('vendor/setting')->with('success',"Payment Successfull!");
-    }
 
-     public function verifySubscription(Request $request)
-    {
-        /*echo "<pre>";
-        print_r($request->all()); die;*/
-        if($request->status == "successful"){
-           $verifypayment = $this->curlGet($request->transaction_id);
-
-          //$orderData=Session::get('orderData');
-           $paymentRecord = PaymentRecord::firstOrCreate([
-                'transacton_id' => $request->transaction_id
-            ], [
-                'transacton_id' => $request->transaction_id,
-                'last_four_digit' => $verifypayment->data->card->last_4digits,
-                'flw_ref' => $verifypayment->data->flw_ref,
-                'tx_ref' => $verifypayment->data->tx_ref,
-                'amount' => $verifypayment->data->amount,
-                'app_fee' => $verifypayment->data->app_fee,
-                'customer_id' => $verifypayment->data->customer->id,
-                'status' => $verifypayment->data->status,
-                'currency' => $verifypayment->data->currency,
-                'card_type' => $verifypayment->data->card->type,
-                'payment_responce' => json_encode($verifypayment),
-            ]);
-
-           $subscription = Subscription::firstOrCreate([
-                'user_id' => auth()->user()->id,
-            ], [
-                'stripe_id' => $request->transaction_id,
-                'user_id' => auth()->user()->id,
-                'card_last_four' => $verifypayment->data->card->last_4digits,
-                'start_at' => now(),
-                'expire_at' => Carbon::today()->addDays(30)
-            ]);
-
-            if($subscription){
-               return redirect('/vendor/setting')->with('message','Great! Plan subscribe successfully');
-            }else{
-               return redirect()->back()->with('error','Whoops! Plan not subscribe'); 
-            }
-           
-       }
+       return redirect()->back()->with('error', 'Payment was not successful.');
     }
 }
