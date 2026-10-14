@@ -59,6 +59,5 @@ class Kernel extends HttpKernel
         'checkAdmin' => \App\Http\Middleware\IsAdminMiddleware::class,
         'vendor' => \App\Http\Middleware\isVendor::class,
         'checkUser' => \App\Http\Middleware\IsCustomer::class,
-        'checkCartEmpty' => \App\Http\Middleware\EnsureCartIsNotEmpty::class,
     ];
 }

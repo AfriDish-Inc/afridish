@@ -55,46 +55,6 @@ trait GlobalTrait
     }
 
 
-    public function orderPlaced($data)
-    {
-        //return $data;
-        $insertdata['user_id'] = auth()->user()->id;
-        $insertdata['product_id'] = "";
-        $insertdata['order_date'] = now();
-        $insertdata['order_type'] = $data['payment_method'];
-        $insertdata['amount'] = $data['grand_total'];
-        $insertdata['quantity'] = $data['product_quantity'];
-        $insertdata['tax_amount'] = $data['tax'];
-        $insertdata['tax_percent'] = $data['tax_percent'];
-        $insertdata['shipping_cost'] = $data['shipping_cost'];
-        $insertdata['address_id'] = $data['address_id']; 
-        $insert_id =  DB::table('orders')->insertGetId($insertdata);
-        $product_ids = explode('|',$data['product_id']);
-        foreach ($product_ids as $key => $value) {
-            $cartdata = DB::table('carts')->where('user_id',auth()->user()->id)->where('product_id',$value)->first();
-            if($cartdata){
-                $productdata = DB::table('products')->where('id',$value)->first();
-                // orders.vendor_id is NOT set here on purpose: a single order can
-                // span multiple vendors (one row per product in order_items, each
-                // correctly tagged with its own vendor_id below), so there is no
-                // single correct vendor for the order as a whole. Overwriting this
-                // column per product meant only the last vendor processed ever saw
-                // the order in their dashboard - every other vendor in a
-                // multi-vendor cart silently lost it. Vendor-scoped order queries
-                // should go through order_items.vendor_id instead (see
-                // OrderController::index/updateOrder/showOrder).
-                $order_item['order_id'] = $insert_id;
-                $order_item['product_id'] = $value;
-                $order_item['order_quantity'] = $cartdata->product_quantity;
-                $order_item['price'] = $productdata->price;
-                $order_item['vendor_id'] = $productdata->provider_id;
-                DB::table('order_items')->insert($order_item);
-                DB::table('products')->where('id',$value)->update(['quantity' => $productdata->quantity-$cartdata->product_quantity, 'product_sold'=>$cartdata->product_quantity]);
-                DB::table('carts')->where('id',$cartdata->id)->delete();
-            }
-        }
-        return $insert_id;
-    }
 
 
 

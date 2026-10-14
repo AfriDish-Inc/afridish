@@ -17,9 +17,7 @@ Route::get('auth/google/callback', [App\Http\Controllers\Website\UserController:
        Route::get('/learn', 'Website\ContactUsController@learn');
        Route::get('/branch', 'Website\ContactUsController@branch');
        Route::any('/productdata', 'Website\ProductController@productData');
-       Route::any('/verify', 'Website\OrderController@verifyPayment');
        Route::post('/addwishlist', 'Website\ProductController@wishlistAdd');
-       Route::post('/addtocart', 'Website\ProductController@addcart');
 
 
        // vendors module
@@ -40,23 +38,7 @@ Route::get('auth/google/callback', [App\Http\Controllers\Website\UserController:
         Route::get('/wish-list', 'Website\ProductController@wishlist');
         Route::get('/remove-wishlist', 'Website\ProductController@removeWishlist');
         Route::any('/profile-setting', 'Website\UserController@profileSetting');
-        //Route::get('/shoping-cart', 'Website\UserController@shopingCart'); 
-        Route::post('/updateCart', 'Website\CartController@updateCart')->name('updateCart');
-        Route::post('/deleteCart', 'Website\CartController@deleteCart')->name('deleteCart');  
-        Route::get('/shoping-cart', 'Website\CartController@index'); 
-        Route::any('/addcartlist', 'Website\CartController@addToCart');
-        Route::any('/save-address', 'Website\UserController@saveAddress');
-        Route::any('/movetocart', 'Website\CartController@moveToCart');
-        Route::any('/delete-cart-product/{id?}', 'Website\CartController@removeCartProduct');
-        Route::any('/billing-address', 'Website\UserController@billingAddress');
-        Route::any('/checkout', 'Website\UserController@checkout');
-        Route::any('/order-history', 'Website\OrderController@orderHistory');
-        Route::any('/product-checkout', 'Website\OrderController@productCheckout')->name('product_checkout');
         Route::any('/submit-review', 'Website\ProductReviewController@submitReview');
-        Route::any('/order-details', 'Website\OrderController@orderDetails');
-        Route::any('/removecart', 'Website\ProductController@removeCart');
-        Route::any('/order-rating', 'Website\ProductReviewController@orderRating')->name('order-rating');
-          Route::any('addUserCard','Website\CardController@addUserCard')->name('users.addUserCard');
         Route::post('/request-order', 'Website\InquiryController@store')->name('request-order');
 
     });
@@ -79,13 +61,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::resource('brand', 'BrandController');
         Route::resource('tag', 'TagController');
         Route::resource('testimonial', 'TestimonialController');
-        Route::get('orders', 'OrderController@index')->name('orders');
         Route::get('contact', 'ContactUsController@index')->name('contact');
         Route::post('updateStatus', 'StatusController@updateStatus')->name('updateStatus');
         Route::post('updateFeatures', 'StatusController@updateFeatures')->name('updateFeatures');
         Route::post('updateRecommended', 'StatusController@updateRecommended')->name('updateRecommended');
         Route::post('changestate', 'CategoriesController@changeState');
-        Route::get('show-order', 'OrderController@showOrder');
     });
 });
 
@@ -101,11 +81,6 @@ Route::group(['prefix' => 'vendor', 'as' => 'vendor.'], function () {
         Route::post('updateFeatures', 'StatusController@updateFeatures')->name('updateFeatures');
        //Route::resource('category', 'CategoriesController');
         Route::resource('product', 'ProductController');
-       // Route::get('orders', 'OrderController@index')->name('orders');
-        Route::get('orders', 'OrderController@index')->name('orders');
-        Route::any('update-order', 'OrderController@updateOrder');
-        Route::get('show-order', 'OrderController@showOrder');
-        Route::get('sold-product', 'OrderController@soldProduct')->name('sold-product');
         Route::get('inquiries', 'InquiriesController@index')->name('inquiries');
         Route::post('inquiries/update-status', 'InquiriesController@updateStatus')->name('inquiries.update-status');
         Route::any('setting', 'SubscriptionController@index')->name('setting');

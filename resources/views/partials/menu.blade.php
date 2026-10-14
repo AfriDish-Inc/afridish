@@ -71,12 +71,6 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('admin.orders') }}" class="nav-link">
-                 <i class="nav-icon fas fa-book-reader nav-icon"></i>
-                   Orders
-                </a>
-            </li>
-            <li class="nav-item">
                 <a href="{{ route('admin.users') }}" class="nav-link">
                    <i class="fa fa-user-tie nav-icon" aria-hidden="true"></i>
                    Users
@@ -135,18 +129,6 @@
                     <a href="{{ route('vendor.inquiries') }}" class="nav-link">
                      <i class="nav-icon fas fa-envelope nav-icon"></i>
                        Order Requests
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('vendor.orders') }}" class="nav-link">
-                     <i class="nav-icon fas fa-book-reader nav-icon"></i>
-                       Orders
-                    </a>
-                </li>
-                 <li class="nav-item"> 
-                    <a href="{{ route('vendor.sold-product') }}" class="nav-link">
-                     <i class="nav-icon fas fa-book-reader nav-icon"></i>
-                       Sold Products
                     </a>
                 </li>
                 <li class="nav-item"> 
