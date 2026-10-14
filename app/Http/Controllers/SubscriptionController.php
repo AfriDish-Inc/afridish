@@ -75,11 +75,13 @@ class SubscriptionController extends Controller
                 'payment_responce' => json_encode($verifypayment),
             ]);
 
-           $subscription = Subscription::firstOrCreate([
+           // updateOrCreate, not firstOrCreate - a renewal payment must
+           // actually extend expire_at on the existing row, not be
+           // silently absorbed into it while the old expiry stands.
+           $subscription = Subscription::updateOrCreate([
                 'user_id' => auth()->user()->id,
             ], [
                 'stripe_id' => $request->transaction_id,
-                'user_id' => auth()->user()->id,
                 'card_last_four' => $verifypayment->data->card->last_4digits,
                 'start_at' => now(),
                 'expire_at' => Carbon::today()->addDays(30)
@@ -121,7 +123,7 @@ class SubscriptionController extends Controller
             if($bankAccount){
                return redirect('/vendor/setting')->with('message','Great! Bank account added successfully');
             }else{
-               return redirect()->with('error','Whoops! Bank account not added '); 
+               return redirect()->back()->with('error','Whoops! Bank account not added ');
             }
         }else{
             $account = BankAccount::where('user_id',Auth::user()->id)->first();

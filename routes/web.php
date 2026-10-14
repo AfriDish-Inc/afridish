@@ -89,9 +89,10 @@ Route::group(['prefix' => 'vendor', 'as' => 'vendor.'], function () {
     });
 });
 
-Route::get('/stripe', 'Website\StripePaymentController@stripe');
-Route::post('/stripe', 'Website\StripePaymentController@stripePost')->name('stripe.post');
-//Route::any('/stripe', 'Website\StripePaymentController@stripe');
+Route::middleware(['vendor'])->group(function () {
+    Route::get('/stripe', 'Website\StripePaymentController@stripe');
+    Route::post('/stripe', 'Website\StripePaymentController@stripePost')->name('stripe.post');
+});
 // Route::controller(Website\StripePaymentController::class)->group(function(){
 //     Route::get('stripe', 'stripe');
 //     Route::post('stripe', 'stripePost')->name('stripe.post');
