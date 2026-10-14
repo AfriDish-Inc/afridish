@@ -131,7 +131,13 @@
                        Products
                     </a>
                 </li>
-                <li class="nav-item"> 
+                <li class="nav-item">
+                    <a href="{{ route('vendor.inquiries') }}" class="nav-link">
+                     <i class="nav-icon fas fa-envelope nav-icon"></i>
+                       Order Requests
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('vendor.orders') }}" class="nav-link">
                      <i class="nav-icon fas fa-book-reader nav-icon"></i>
                        Orders

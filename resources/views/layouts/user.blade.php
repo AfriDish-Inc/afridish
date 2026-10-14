@@ -435,7 +435,7 @@ $('.button-count:last-child').click(function(){
                      }
                   var image = v.image;
                   var n = image.split('|');
-                      newdata = '<a href="{{url('product-details?id=')}}'+v.id+'"><div class="col-md-3"><div class="main-frame"><div class="product-thumbnail"><img src="{{ asset('upload/images/')}}/'+n[0]+'"><div class="wish-btn"><div class="tag-status"><span>NEW</span>'+svg+'</div></div><div class="atc"><a href="javascript::void(0)" onclick="addToCart('+v.id+',1)">Add To Cart</a></div></div><div class="product-info"><div class="star-miles"><div class="rating"><input type="radio" name="rating'+k+'"  value="5" id="p5'+k+'" ><label for="p5'+k+'">☆</label><input type="radio" name="rating'+k+'" value="4" id="p4'+k+'" ><label for="p4'+k+'">☆</label><input type="radio" name="rating'+k+'" value="3" id="p3'+k+'" ><label for="p3'+k+'">☆</label><input type="radio" name="rating'+k+'" value="2" id="p2'+k+'" ><label for="p2'+k+'">☆</label><input type="radio" name="rating'+k+'" value="1" id="p1'+k+'" ><label for="p1'+k+'">☆</label></div></div><h4 class="product-title">'+v.name+'</h4><p class="price">$'+v.price+'</p></div></div></div></a>';
+                      newdata = '<a href="{{url('product-details?id=')}}'+v.id+'"><div class="col-md-3"><div class="main-frame"><div class="product-thumbnail"><img src="{{ asset('upload/images/')}}/'+n[0]+'"><div class="wish-btn"><div class="tag-status"><span>NEW</span>'+svg+'</div></div><div class="atc"><a href="javascript::void(0)" onclick="openInquiryModal('+v.provider_id+','+v.id+',\'\')">Request to Order</a></div></div><div class="product-info"><div class="star-miles"><div class="rating"><input type="radio" name="rating'+k+'"  value="5" id="p5'+k+'" ><label for="p5'+k+'">☆</label><input type="radio" name="rating'+k+'" value="4" id="p4'+k+'" ><label for="p4'+k+'">☆</label><input type="radio" name="rating'+k+'" value="3" id="p3'+k+'" ><label for="p3'+k+'">☆</label><input type="radio" name="rating'+k+'" value="2" id="p2'+k+'" ><label for="p2'+k+'">☆</label><input type="radio" name="rating'+k+'" value="1" id="p1'+k+'" ><label for="p1'+k+'">☆</label></div></div><h4 class="product-title">'+v.name+'</h4><p class="price">$'+v.price+'</p></div></div></div></a>';
 
                       htmldata.push(newdata);
                     
@@ -451,33 +451,6 @@ $('.button-count:last-child').click(function(){
 
 
 
-      /*var category_id = $.QueryString("category_id");
-      category_id = [category_id];
-      $('#products').empty();
-         $.ajax({
-           headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-           url: "{{url('productdata')}}",
-           type: 'POST',
-           data: {category_id:category_id},
-           success: function(response){
-              var htmldata = [];
-             $.each(response, function(k, v) {
-                 if (v.is_fav == 1) {
-                        var svg = '<a href="{{url('/add-wish-list?id=')}}'+v.id+'"><img src="{{ asset('website/img/favorite.svg')}}"></a>';
-                     }else{
-                         
-                         var svg = '<a href="{{url('/add-wish-list?id=')}}'+v.id+'"><img src="{{ asset('website/img/wish.svg')}}"></a>';
-                     }
-              var image = v.image;
-              var n = image.split('|');
-                  newdata = '<a href="{{url('product-details?id=')}}'+v.id+'"><div class="col-md-3"><div class="main-frame"><div class="product-thumbnail"><img src="{{ asset('upload/images/')}}/'+n[0]+'"><div class="wish-btn"><div class="tag-status"><span>NEW</span>'+svg+'</div></div><div class="atc"><a href="{{url('/addcartlist?product_id=')}}/'+v.id+'&product_quantity=1">Add To Cart</a></div></div><div class="product-info"><div class="star-miles"><div class="rating"><input type="radio" name="rating" value="5" id="5" ><label for="5">☆</label><input type="radio" name="rating" value="4" id="4" ><label for="4">☆</label><input type="radio" name="rating" value="3" id="3" ><label for="3">☆</label><input type="radio" name="rating" value="2" id="2" ><label for="2">☆</label><input type="radio" name="rating" value="1" id="1" ><label for="1">☆</label></div></div><h4 class="product-title">'+v.name+'</h4><p class="price">$'+v.price+'</p></div></div></div></a>';
-
-                  htmldata.push(newdata);
-                
-              });
-              $("#products").append(htmldata);
-          }
-       }); */
 
 
 
@@ -718,6 +691,68 @@ rangeInput.forEach(input =>{
     }
    });
     </script>
+
+   <!-- Request to Order modal -->
+   <div id="inquiry-modal" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+      <div style="background:#fff; max-width:420px; margin:10% auto; padding:25px; border-radius:6px; position:relative;">
+         <span onclick="closeInquiryModal()" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:22px;">&times;</span>
+         <h4 id="inquiry-modal-title">Request to Order</h4>
+         <p style="color:#777; font-size:14px;">Tell the vendor what you'd like. They'll contact you directly to confirm and arrange payment.</p>
+         <form id="inquiry-form">
+            <input type="hidden" id="inquiry-vendor-id" name="vendor_id">
+            <input type="hidden" id="inquiry-product-id" name="product_id">
+            <div class="form-group">
+               <label>Your phone number</label>
+               <input type="text" class="form-control" id="inquiry-phone" name="phone" required>
+            </div>
+            <div class="form-group">
+               <label>What would you like to order?</label>
+               <textarea class="form-control" id="inquiry-message" name="message" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+               <label>Needed by (optional)</label>
+               <input type="date" class="form-control" id="inquiry-date" name="requested_date">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Send Request</button>
+         </form>
+      </div>
+   </div>
+   <script>
+      function openInquiryModal(vendorId, productId, productName){
+         @guest
+            window.location.href = "{{ url('login') }}";
+            return;
+         @endguest
+         $('#inquiry-vendor-id').val(vendorId);
+         $('#inquiry-product-id').val(productId || '');
+         $('#inquiry-modal-title').text(productName ? 'Request: ' + productName : 'Request to Order');
+         $('#inquiry-modal').show();
+      }
+
+      function closeInquiryModal(){
+         $('#inquiry-modal').hide();
+      }
+
+      $('#inquiry-form').on('submit', function(e){
+         e.preventDefault();
+         $.ajax({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            url: "{{ url('request-order') }}",
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function(response){
+               toastr.options = { "closeButton": true, "progressBar": true };
+               if(response.status){
+                  toastr.success(response.message);
+                  closeInquiryModal();
+                  $('#inquiry-form')[0].reset();
+               }else{
+                  toastr.error(response.message);
+               }
+            }
+         });
+      });
+   </script>
 
    </body>
 </html>

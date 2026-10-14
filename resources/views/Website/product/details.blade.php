@@ -73,9 +73,7 @@
             <li><label>Availability</label> : <span class="custom-mark">@if($products->quantity > 0) In Stock @else Out of Stock @endif</span></li>
          </ul>
          <div class="atc-data">
-            <p>Qty 
-            <form><input type="number" name="" placeholder="1"><a href="javascript::void(0)" onclick="addToCart({{$products->id}},1)" class="add-to-bag"><img src="{{ asset('website/img/bag.svg')}}">Add To Cart</a></form>
-            </p>
+            <a href="javascript::void(0)" onclick="openInquiryModal({{$products->provider_id}}, {{$products->id}}, '{{ addslashes($products->name) }}')" class="add-to-bag"><img src="{{ asset('website/img/bag.svg')}}">Request to Order</a>
          </div>
       </div>
    </div>
@@ -213,7 +211,7 @@
                                        </a>
                                     </div>
                                  </div>
-                                 <div class="atc"><a href="javascript::void(0)" onclick="addToCart({{$product->id}},1)">Add To Cart</a></div>
+                                 <div class="atc"><a href="javascript::void(0)" onclick="openInquiryModal({{$product->provider_id}}, {{$product->id}}, '{{ addslashes($product->name) }}')">Request to Order</a></div>
                               </div>
                               <div class="product-info">
                                  <div class="star-miles">
